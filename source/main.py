@@ -5,8 +5,29 @@ import hashlib
 from tkinter import *
 from tkinter import simpledialog
 from functools import partial
-# Generator
-# define data
+
+
+def generator():
+    length = 15
+
+    # define data
+    lower = string.ascii_lowercase
+    upper = string.ascii_uppercase
+    num = string.digits
+    symbols = string.punctuation
+    # string.ascii_letters
+
+    # combine the data
+    all = lower + upper + num + symbols
+
+    # use random
+    temp = random.sample(all, length)
+
+    # create the password
+    passwordgenerated = "".join(temp)
+
+    # print the password
+    print(passwordgenerated)
 
 
 # Database
@@ -119,8 +140,6 @@ def loginScreen():
 
 
 def passwordVault():
-    for widget in window.winfo_children():
-        widget.destroy()
 
     def addEntry():
         text1 = "Website"
@@ -129,6 +148,7 @@ def passwordVault():
 
         website = popUp(text1)
         username = popUp(text2)
+        generator()
         password = popUp(text3)
         insert_fields = """INSERT INTO vault(website,username,password)
         VALUES(?, ?, ?)"""
@@ -164,11 +184,14 @@ def passwordVault():
             cursor.execute("SELECT * FROM vault")
             array = cursor.fetchall()
 
-            lbl1 = Label(window, text=(array[i][1]), font=("Helvetica", 12))
+            lbl1 = Label(window, text=(
+                array[i][1]), font=("Helvetica", 12))
             lbl1.grid(column=0, row=i+3)
-            lbl1 = Label(window, text=(array[i][2]), font=("Helvetica", 12))
+            lbl1 = Label(window, text=(
+                array[i][2]), font=("Helvetica", 12))
             lbl1.grid(column=1, row=i+3)
-            lbl1 = Label(window, text=(array[i][3]), font=("Helvetica", 12))
+            lbl1 = Label(window, text=(
+                array[i][3]), font=("Helvetica", 12))
             lbl1.grid(column=2, row=i+3)
 
             btn = Button(window, text="Delete",
