@@ -5,29 +5,61 @@ import hashlib
 from tkinter import *
 from tkinter import simpledialog
 from functools import partial
+import array
+# Generator
 
 
 def generator():
-    length = 15
+    MAX_LEN = 12
 
-    # define data
-    lower = string.ascii_lowercase
-    upper = string.ascii_uppercase
-    num = string.digits
-    symbols = string.punctuation
-    # string.ascii_letters
+    # declare arrays of the character that we need in out password
+    # Represented as chars to enable easy string concatenation
+    DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    LOCASE_CHARACTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+                         'i', 'j', 'k', 'm', 'n', 'o', 'p', 'q',
+                         'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
+                         'z']
 
-    # combine the data
-    all = lower + upper + num + symbols
+    UPCASE_CHARACTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                         'I', 'J', 'K', 'M', 'N', 'O', 'p', 'Q',
+                         'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+                         'Z']
 
-    # use random
-    temp = random.sample(all, length)
+    SYMBOLS = ['@', '#', '$', '%', '=', ':', '?', '.', '/', '|', '~', '>',
+               '*', '(', ')', '<']
 
-    # create the password
-    passwordgenerated = "".join(temp)
+    # combines all the character arrays above to form one array
+    COMBINED_LIST = DIGITS + UPCASE_CHARACTERS + LOCASE_CHARACTERS + SYMBOLS
 
-    # print the password
-    print(passwordgenerated)
+    # randomly select at least one character from each character set above
+    rand_digit = random.choice(DIGITS)
+    rand_upper = random.choice(UPCASE_CHARACTERS)
+    rand_lower = random.choice(LOCASE_CHARACTERS)
+    rand_symbol = random.choice(SYMBOLS)
+
+    # combine the character randomly selected above
+    # at this stage, the password contains only 4 characters but
+    # we want a 12-character password
+    temp_pass = rand_digit + rand_upper + rand_lower + rand_symbol
+
+    # now that we are sure we have at least one character from each
+    # set of characters, we fill the rest of
+    # the password length by selecting randomly from the combined
+    # list of character above.
+    for x in range(MAX_LEN - 4):
+        temp_pass = temp_pass + random.choice(COMBINED_LIST)
+
+        # convert temporary password into array and shuffle to
+        # prevent it from having a consistent pattern
+        # where the beginning of the password is predictable
+        temp_pass_list = array.array('u', temp_pass)
+        random.shuffle(temp_pass_list)
+    global passwordg
+    # traverse the temporary password array and append the chars
+    # to form the password
+    passwordg = ""
+    for x in temp_pass_list:
+        passwordg = passwordg + x
 
 
 # Database
@@ -91,13 +123,18 @@ def firstScreen():
 
     def savePassword():
         if txt.get() == txt1.get():
-            hashedPassword = hashPassword(txt.get().encode("utf-8"))
+            minlength = 15
+            lenght = (len(txt.get()))
+            if minlength > lenght:
+                hashedPassword = hashPassword(txt.get().encode("utf-8"))
 
-            insert_password = """INSERT INTO masterpassword(password)
-            VALUES(?) """
-            cursor.execute(insert_password, [(hashedPassword)])
-            db.commit()
-            passwordVault()
+                insert_password = """INSERT INTO masterpassword(password)
+                VALUES(?) """
+                cursor.execute(insert_password, [(hashedPassword)])
+                db.commit()
+                passwordVault()
+            else:
+                lbl2.config(text="Too short password!")
         else:
             lbl2.config(text="Passwords do not match")
 
@@ -140,15 +177,17 @@ def loginScreen():
 
 
 def passwordVault():
+    for widget in window.winfo_children():
+        widget.destroy()
 
     def addEntry():
+        generator()
         text1 = "Website"
         text2 = "Username"
-        text3 = "Password"
+        text3 = "Password", passwordg
 
         website = popUp(text1)
         username = popUp(text2)
-        generator()
         password = popUp(text3)
         insert_fields = """INSERT INTO vault(website,username,password)
         VALUES(?, ?, ?)"""
@@ -184,14 +223,11 @@ def passwordVault():
             cursor.execute("SELECT * FROM vault")
             array = cursor.fetchall()
 
-            lbl1 = Label(window, text=(
-                array[i][1]), font=("Helvetica", 12))
+            lbl1 = Label(window, text=(array[i][1]), font=("Helvetica", 12))
             lbl1.grid(column=0, row=i+3)
-            lbl1 = Label(window, text=(
-                array[i][2]), font=("Helvetica", 12))
+            lbl1 = Label(window, text=(array[i][2]), font=("Helvetica", 12))
             lbl1.grid(column=1, row=i+3)
-            lbl1 = Label(window, text=(
-                array[i][3]), font=("Helvetica", 12))
+            lbl1 = Label(window, text=(array[i][3]), font=("Helvetica", 12))
             lbl1.grid(column=2, row=i+3)
 
             btn = Button(window, text="Delete",
