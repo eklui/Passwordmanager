@@ -1,3 +1,1 @@
-# Passwordmanager
-
-This passwordmanager is code from internet combined. I dont take any credit from this!
+I dont take any credit from this!
