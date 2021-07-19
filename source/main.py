@@ -10,7 +10,7 @@ import array
 
 
 def generator():
-    MAX_LEN = 12
+    MAX_LEN = 18
 
     # declare arrays of the character that we need in out password
     # Represented as chars to enable easy string concatenation
