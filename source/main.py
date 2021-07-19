@@ -95,7 +95,7 @@ window.title("Password Vault")
 
 
 def hashPassword(input):
-    hash = hashlib.md5(input)
+    hash = hashlib.sha3_512(input)
     hash = hash.hexdigest()
     return hash
 
