@@ -1,2 +1,2 @@
 I dont take any credit from this!
-Generator is from geeks
+Generator is from geeks for geeks.
