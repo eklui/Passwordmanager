@@ -10,7 +10,7 @@ import array
 
 
 def generator():
-    MAX_LEN = 18
+    MAX_LEN = usergeneratedpwlen
 
     # declare arrays of the character that we need in out password
     # Represented as chars to enable easy string concatenation
@@ -46,7 +46,7 @@ def generator():
     # set of characters, we fill the rest of
     # the password length by selecting randomly from the combined
     # list of character above.
-    for x in range(MAX_LEN - 4):
+    for x in range(int(MAX_LEN) - 4):
         temp_pass = temp_pass + random.choice(COMBINED_LIST)
 
         # convert temporary password into array and shuffle to
@@ -123,7 +123,7 @@ def firstScreen():
 
     def savePassword():
         if txt.get() == txt1.get():
-            minlength = 15
+            minlength = 10
             lenght = (len(txt.get()))
             if minlength > lenght:
                 hashedPassword = hashPassword(txt.get().encode("utf-8"))
@@ -204,17 +204,30 @@ def passwordVault():
     window.geometry("700x350")
 
     lbl = Label(window, text="Password Vault")
-    lbl.grid(column=1)
+    lbl.grid(column=0)
 
+    def pwgeneratorsettings():
+        lenlist = [10, 12, 14, 16, 18, 20]
+        value = StringVar(window)
+
+        def send_answer():
+            global usergeneratedpwlen
+            usergeneratedpwlen = format(value.get())
+            return None
+        dd = OptionMenu(window, value, *lenlist)
+        dd.grid(column=2, row=0)
+        submit_button = Button(window, text='Submit', command=send_answer)
+        submit_button.grid(column=2, row=1)
+    pwgeneratorsettings()
     btn = Button(window, text="+", command=addEntry)
     btn.grid(column=1, pady=10)
 
     lbl = Label(window, text="Website")
-    lbl.grid(row=2, column=0, padx=80)
+    lbl.grid(row=3, column=0, padx=80)
     lbl = Label(window, text="Username")
-    lbl.grid(row=2, column=1, padx=80)
+    lbl.grid(row=3, column=1, padx=80)
     lbl = Label(window, text="Password")
-    lbl.grid(row=2, column=2, padx=80)
+    lbl.grid(row=3, column=2, padx=80)
 
     cursor.execute("SELECT * FROM vault")
     if(cursor.fetchall() != None):
@@ -224,11 +237,11 @@ def passwordVault():
             array = cursor.fetchall()
 
             lbl1 = Label(window, text=(array[i][1]), font=("Helvetica", 12))
-            lbl1.grid(column=0, row=i+3)
+            lbl1.grid(column=0, row=i+4)
             lbl1 = Label(window, text=(array[i][2]), font=("Helvetica", 12))
-            lbl1.grid(column=1, row=i+3)
+            lbl1.grid(column=1, row=i+4)
             lbl1 = Label(window, text=(array[i][3]), font=("Helvetica", 12))
-            lbl1.grid(column=2, row=i+3)
+            lbl1.grid(column=2, row=i+4)
 
             btn = Button(window, text="Delete",
                          command=partial(removeEntry, array[i][0]))
