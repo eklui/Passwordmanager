@@ -245,7 +245,7 @@ def passwordVault():
 
             btn = Button(window, text="Delete",
                          command=partial(removeEntry, array[i][0]))
-            btn.grid(column=3, row=i+3, pady=10)
+            btn.grid(column=3, row=i+4, pady=10)
 
             i = i+1
 
