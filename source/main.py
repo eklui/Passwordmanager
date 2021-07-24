@@ -180,22 +180,6 @@ def passwordVault():
     for widget in window.winfo_children():
         widget.destroy()
 
-    def addEntry():
-        generator()
-        text1 = "Website"
-        text2 = "Username"
-        text3 = "Password", passwordg
-
-        website = popUp(text1)
-        username = popUp(text2)
-        password = popUp(text3)
-        insert_fields = """INSERT INTO vault(website,username,password)
-        VALUES(?, ?, ?)"""
-
-        cursor.execute(insert_fields, (website, username, password))
-        db.commit()
-        passwordVault()
-
     def removeEntry(input):
         cursor.execute("DELETE FROM vault WHERE id = ?", (input,))
         db.commit()
@@ -218,7 +202,24 @@ def passwordVault():
         dd.grid(column=2, row=0)
         submit_button = Button(window, text='Submit', command=send_answer)
         submit_button.grid(column=2, row=1)
+
     pwgeneratorsettings()
+
+    def addEntry():
+        generator()
+        text1 = "Website"
+        text2 = "Username"
+        text3 = "Password", passwordg
+
+        website = popUp(text1)
+        username = popUp(text2)
+        password = popUp(text3)
+        insert_fields = """INSERT INTO vault(website,username,password)
+        VALUES(?, ?, ?)"""
+
+        cursor.execute(insert_fields, (website, username, password))
+        db.commit()
+        passwordVault()
     btn = Button(window, text="+", command=addEntry)
     btn.grid(column=1, pady=10)
 
