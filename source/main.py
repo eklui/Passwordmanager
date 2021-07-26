@@ -101,7 +101,11 @@ def hashPassword(input):
 
 
 def firstScreen():
-    window.geometry("350x150")
+    window.geometry("350x190")
+
+    lbl3 = Label(window, text="v0.2-beta")
+    lbl3.config(anchor=CENTER, pady=10)
+    lbl3.pack()
 
     lbl = Label(window, text="Create Master Password")
     lbl.config(anchor=CENTER)
@@ -143,12 +147,15 @@ def firstScreen():
 
 
 def loginScreen():
-    window.geometry("350x150")
+    window.geometry("350x190")
 
-    lbl = Label(window)
-    lbl.config(anchor=CENTER)
-    lbl.pack()
+    lbl3 = Label(window, text="v0.2-beta")
+    lbl3.config(anchor=CENTER)
+    lbl3.pack()
 
+    lbl2 = Label(window, text="Master password", pady=10)
+    lbl2.config(anchor=CENTER)
+    lbl2.pack()
     txt = Entry(window, width=20, show="*")
     txt.pack()
     txt.focus()
