@@ -196,6 +196,8 @@ def passwordVault():
 
     lbl = Label(window, text="Password Vault")
     lbl.grid(column=0)
+    lbl4 = Label(window, text="Add number to generator")
+    lbl4.grid(column=0, row=1)
 
     def pwgeneratorsettings():
         lenlist = [10, 12, 14, 16, 18, 20]
@@ -204,12 +206,13 @@ def passwordVault():
         def send_answer():
             global usergeneratedpwlen
             usergeneratedpwlen = format(value.get())
+            lbl4.config(text="")
+            lbl4.grid(column=0, row=1)
             return None
-        dd = OptionMenu(window, value, *lenlist)
-        dd.grid(column=2, row=0)
+        om = OptionMenu(window, value, *lenlist)
+        om.grid(column=2, row=0)
         submit_button = Button(window, text='Submit', command=send_answer)
         submit_button.grid(column=2, row=1)
-
     pwgeneratorsettings()
 
     def addEntry():
