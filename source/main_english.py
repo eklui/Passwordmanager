@@ -12,10 +12,10 @@ from ctypes import windll
 
 def copyToClipboard(text):
     pyperclip.copy(text)
-
 usergeneratedpwlen = 12  
 
 def generator():
+    # Source of the following function: https://www.geeksforgeeks.org/generating-strong-password-using-python/
     MAX_LEN = usergeneratedpwlen
 
     DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
@@ -76,10 +76,8 @@ def popUp(text):
     return answer
 
 
-
-
 window = Tk()
-window.title("Salasanat")
+window.title("Passwords")
 sv_ttk.set_theme("light")
 windll.shcore.SetProcessDpiAwareness(1)
 
@@ -96,7 +94,7 @@ def firstScreen():
     lbl3.config(anchor=CENTER)
     lbl3.pack()
 
-    lbl = ttk.Label(window, text="Luo pääsalasana")
+    lbl = ttk.Label(window, text="Create Master Password")
     lbl.config(anchor=CENTER)
     lbl.pack()
 
@@ -104,7 +102,7 @@ def firstScreen():
     txt.pack()
     txt.focus()
 
-    lbl1 = ttk.Label(window, text="Toista salasana")
+    lbl1 = ttk.Label(window, text="Re-enter Password")
     lbl1.pack()
 
     txt1 = ttk.Entry(window, width=20, show="*")
@@ -127,11 +125,11 @@ def firstScreen():
                 db.commit()
                 passwordVault()
             else:
-                lbl2.config(text="Salasanan tulee olla vähintään 10 merkkiä pitkä")
+                lbl2.config(text="Too short password!")
         else:
-            lbl2.config(text="Salasanat eivät täsmää")
+            lbl2.config(text="Passwords do not match")
 
-    btn = ttk.Button(window, text="Lähetä", command=savePassword)
+    btn = ttk.Button(window, text="Submit", command=savePassword)
     btn.pack(pady=10)
 
 
@@ -142,7 +140,7 @@ def loginScreen():
     lbl3.config(anchor=CENTER)
     lbl3.pack()
 
-    lbl2 = ttk.Label(window, text="Pääsalasana", font=("Helvetica", 12))
+    lbl2 = ttk.Label(window, text="Master password", font=("Helvetica", 12))
     lbl2.config(anchor=CENTER)
     lbl2.pack()
     txt = ttk.Entry(window, width=20, show="*")
@@ -166,9 +164,9 @@ def loginScreen():
             passwordVault()
         else:
             txt.delete(0, "end")
-            lbl1.config(text="Väärä salasana")
+            lbl1.config(text="Wrong Password")
 
-    btn = ttk.Button(window, text="Lähetä", command=checkPassword)
+    btn = ttk.Button(window, text="Submit", command=checkPassword)
     btn.pack(pady=10)
 
 
@@ -183,13 +181,13 @@ def passwordVault():
         passwordVault()
     window.geometry("1250x600")
 
-    lbl = ttk.Label(window, text="Salasanat", font=("Helvetica", 16))
+    lbl = ttk.Label(window, text="Password Vault", font=("Helvetica", 16))
     lbl.grid(column=0)
-    lbl4 = ttk.Label(window, text="Lisää generoidun salasanan pituus!", font=("Helvetica", 12))
+    lbl4 = ttk.Label(window, text="Add number to generator", font=("Helvetica", 12))
     lbl4.grid(column=0, row=1)
 
     def pwgeneratorsettings():
-        lenghtlist = [10, 12, 14, 16, 18, 20]
+        lenlist = [10, 12, 14, 16, 18, 20]
         value = StringVar(window)
 
         def send_answer():
@@ -198,9 +196,9 @@ def passwordVault():
             lbl4.config(text="")
             lbl4.grid(column=0, row=1)
             return None
-        om = ttk.OptionMenu(window, value, *lenghtlist)
+        om = ttk.OptionMenu(window, value, *lenlist)
         om.grid(column=2, row=0)
-        submit_button = ttk.Button(window, text='Aseta', command=send_answer)
+        submit_button = ttk.Button(window, text='Submit', command=send_answer)
         submit_button.grid(column=2, row=1)
         
 
@@ -208,9 +206,9 @@ def passwordVault():
 
     def addEntry():
         generator()
-        text1 = "Sivusto"
-        text2 = "Käyttäjätunnus"
-        text3 = "Salasana", passwordg
+        text1 = "Website"
+        text2 = "Username"
+        text3 = "Password", passwordg
 
         website = popUp(text1)
         username = popUp(text2)
@@ -224,11 +222,11 @@ def passwordVault():
     btn = ttk.Button(window, text="+", command=addEntry)
     btn.grid(column=1, pady=10)
 
-    lbl = ttk.Label(window, text="Sivusto", font=("Helvetica", 16))
+    lbl = ttk.Label(window, text="Website", font=("Helvetica", 16))
     lbl.grid(row=3, column=0, padx=100)
-    lbl = ttk.Label(window, text="Käyttäjätunnus", font=("Helvetica", 16))
+    lbl = ttk.Label(window, text="Username", font=("Helvetica", 16))
     lbl.grid(row=3, column=1, padx=100)
-    lbl = ttk.Label(window, text="Salasana", font=("Helvetica", 16))
+    lbl = ttk.Label(window, text="Password", font=("Helvetica", 16))
     lbl.grid(row=3, column=2, padx=100)
 
 
@@ -241,12 +239,12 @@ def passwordVault():
             lbl1.grid(column=0, row=i+4)
             lbl1 = ttk.Label(window, text=(vault_entries[i][2]), font=("Helvetica", 16))
             lbl1.grid(column=1, row=i+4)
-            btn_copy_username = ttk.Button(window, text="Kopioi käyttäjätunnus", command=lambda text=vault_entries[i][2]: copyToClipboard(text))
+            btn_copy_username = ttk.Button(window, text="Copy username", command=lambda text=vault_entries[i][2]: copyToClipboard(text))
             btn_copy_username.grid(column=5, row=i+4)
 
             lbl_password = ttk.Label(window, text="*" * len(vault_entries[i][3]), font=("Helvetica", 16))
             lbl_password.grid(column=2, row=i+4)
-            btn_copy_password = ttk.Button(window, text="Kopioi salasana", command=lambda text=vault_entries[i][3]: copyToClipboard(text))
+            btn_copy_password = ttk.Button(window, text="Copy password", command=lambda text=vault_entries[i][3]: copyToClipboard(text))
             btn_copy_password.grid(column=6, row=i+4)    
 
             def showPassword(i, lbl=lbl_password):
@@ -257,9 +255,9 @@ def passwordVault():
 
                 window.after(10000, hidePassword)
 
-            btn_show = ttk.Button(window, text="Näytä", command=lambda i=i, lbl=lbl_password: showPassword(i, lbl))
+            btn_show = ttk.Button(window, text="Show", command=lambda i=i, lbl=lbl_password: showPassword(i, lbl))
             btn_show.grid(column=3, row=i+4, pady=10)
-            btn_delete = ttk.Button(window, text="Poista", command=partial(removeEntry, vault_entries[i][0]))
+            btn_delete = ttk.Button(window, text="Delete", command=partial(removeEntry, vault_entries[i][0]))
             btn_delete.grid(column=4, row=i+4, pady=10)
 
 
