@@ -1,62 +1,57 @@
 import random
-import string
+import pyperclip
 import sqlite3
 import hashlib
 from tkinter import *
 from tkinter import simpledialog
 from functools import partial
 import array
+import sv_ttk
+from tkinter import ttk
+from ctypes import windll
 
+def copyToClipboard(text):
+    pyperclip.copy(text)
 
+usergeneratedpwlen = 12  
 
 def generator():
     MAX_LEN = usergeneratedpwlen
-
 
     DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
     LOCASE_CHARACTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
                          'i', 'j', 'k', 'm', 'n', 'o', 'p', 'q',
                          'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
                          'z']
-
     UPCASE_CHARACTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-                         'I', 'J', 'K', 'M', 'N', 'O', 'p', 'Q',
+                         'I', 'J', 'K', 'M', 'N', 'O', 'P', 'Q',
                          'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
                          'Z']
 
     SYMBOLS = ['@', '#', '$', '%', '=', ':', '?', '.', '/', '|', '~', '>',
                '*', '(', ')', '<']
 
-    
     COMBINED_LIST = DIGITS + UPCASE_CHARACTERS + LOCASE_CHARACTERS + SYMBOLS
 
-   
     rand_digit = random.choice(DIGITS)
     rand_upper = random.choice(UPCASE_CHARACTERS)
     rand_lower = random.choice(LOCASE_CHARACTERS)
     rand_symbol = random.choice(SYMBOLS)
 
-
     temp_pass = rand_digit + rand_upper + rand_lower + rand_symbol
-
 
     for x in range(int(MAX_LEN) - 4):
         temp_pass = temp_pass + random.choice(COMBINED_LIST)
 
-        # convert temporary password into array and shuffle to
-        # prevent it from having a consistent pattern
-        # where the beginning of the password is predictable
         temp_pass_list = array.array('u', temp_pass)
         random.shuffle(temp_pass_list)
     global passwordg
-    # traverse the temporary password array and append the chars
-    # to form the password
     passwordg = ""
     for x in temp_pass_list:
         passwordg = passwordg + x
 
 
-# Database
+
 with sqlite3.connect("password_vault.db") as db:
     cursor = db.cursor()
 
@@ -76,16 +71,17 @@ password TEXT NOT NULL
 """)
 
 
-
 def popUp(text):
     answer = simpledialog.askstring("input string", text)
     return answer
 
 
-# Initiate Window
-window = Tk()
-window.title("Password Vault")
 
+
+window = Tk()
+window.title("Salasanat")
+sv_ttk.set_theme("light")
+windll.shcore.SetProcessDpiAwareness(1)
 
 def hashPassword(input):
     hash = hashlib.sha3_512(input)
@@ -94,35 +90,35 @@ def hashPassword(input):
 
 
 def firstScreen():
-    window.geometry("350x190")
+    window.geometry("1050x570")
 
-    lbl3 = Label(window, text="v0.2-beta")
-    lbl3.config(anchor=CENTER, pady=10)
+    lbl3 = ttk.Label(window, text="v0.3-beta")
+    lbl3.config(anchor=CENTER)
     lbl3.pack()
 
-    lbl = Label(window, text="Create Master Password")
+    lbl = ttk.Label(window, text="Luo pääsalasana")
     lbl.config(anchor=CENTER)
     lbl.pack()
 
-    txt = Entry(window, width=20, show="*")
+    txt = ttk.Entry(window, width=20, show="*")
     txt.pack()
     txt.focus()
 
-    lbl1 = Label(window, text="Re-enter Password")
+    lbl1 = ttk.Label(window, text="Toista salasana")
     lbl1.pack()
 
-    txt1 = Entry(window, width=20, show="*")
+    txt1 = ttk.Entry(window, width=20, show="*")
     txt1.pack()
     txt1.focus()
 
-    lbl2 = Label(window)
+    lbl2 = ttk.Label(window)
     lbl2.pack()
 
     def savePassword():
         if txt.get() == txt1.get():
             minlength = 10
-            lenght = (len(txt.get()))
-            if minlength > lenght:
+            length = (len(txt.get()))
+            if length >= minlength:
                 hashedPassword = hashPassword(txt.get().encode("utf-8"))
 
                 insert_password = """INSERT INTO masterpassword(password)
@@ -131,29 +127,29 @@ def firstScreen():
                 db.commit()
                 passwordVault()
             else:
-                lbl2.config(text="Too short password!")
+                lbl2.config(text="Salasanan tulee olla vähintään 10 merkkiä pitkä")
         else:
-            lbl2.config(text="Passwords do not match")
+            lbl2.config(text="Salasanat eivät täsmää")
 
-    btn = Button(window, text="Submit", command=savePassword)
+    btn = ttk.Button(window, text="Lähetä", command=savePassword)
     btn.pack(pady=10)
 
 
 def loginScreen():
-    window.geometry("350x190")
+    window.geometry("700x380")
 
-    lbl3 = Label(window, text="v0.2-beta")
+    lbl3 = ttk.Label(window, text="v0.3-beta")
     lbl3.config(anchor=CENTER)
     lbl3.pack()
 
-    lbl2 = Label(window, text="Master password", pady=10)
+    lbl2 = ttk.Label(window, text="Pääsalasana", font=("Helvetica", 12))
     lbl2.config(anchor=CENTER)
     lbl2.pack()
-    txt = Entry(window, width=20, show="*")
+    txt = ttk.Entry(window, width=20, show="*")
     txt.pack()
     txt.focus()
 
-    lbl1 = Label(window)
+    lbl1 = ttk.Label(window)
     lbl1.pack()
 
     def getMasterPassword():
@@ -170,9 +166,9 @@ def loginScreen():
             passwordVault()
         else:
             txt.delete(0, "end")
-            lbl1.config(text="Wrong Password")
+            lbl1.config(text="Väärä salasana")
 
-    btn = Button(window, text="Submit", command=checkPassword)
+    btn = ttk.Button(window, text="Lähetä", command=checkPassword)
     btn.pack(pady=10)
 
 
@@ -185,15 +181,15 @@ def passwordVault():
         db.commit()
 
         passwordVault()
-    window.geometry("700x350")
+    window.geometry("1250x600")
 
-    lbl = Label(window, text="Password Vault")
+    lbl = ttk.Label(window, text="Salasanat", font=("Helvetica", 16))
     lbl.grid(column=0)
-    lbl4 = Label(window, text="Add number to generator")
+    lbl4 = ttk.Label(window, text="Lisää generoidun salasanan pituus!", font=("Helvetica", 12))
     lbl4.grid(column=0, row=1)
 
     def pwgeneratorsettings():
-        lenlist = [10, 12, 14, 16, 18, 20]
+        lenghtlist = [10, 12, 14, 16, 18, 20]
         value = StringVar(window)
 
         def send_answer():
@@ -202,17 +198,19 @@ def passwordVault():
             lbl4.config(text="")
             lbl4.grid(column=0, row=1)
             return None
-        om = OptionMenu(window, value, *lenlist)
+        om = ttk.OptionMenu(window, value, *lenghtlist)
         om.grid(column=2, row=0)
-        submit_button = Button(window, text='Submit', command=send_answer)
+        submit_button = ttk.Button(window, text='Aseta', command=send_answer)
         submit_button.grid(column=2, row=1)
+        
+
     pwgeneratorsettings()
 
     def addEntry():
         generator()
-        text1 = "Website"
-        text2 = "Username"
-        text3 = "Password", passwordg
+        text1 = "Sivusto"
+        text2 = "Käyttäjätunnus"
+        text3 = "Salasana", passwordg
 
         website = popUp(text1)
         username = popUp(text2)
@@ -223,39 +221,46 @@ def passwordVault():
         cursor.execute(insert_fields, (website, username, password))
         db.commit()
         passwordVault()
-    btn = Button(window, text="+", command=addEntry)
+    btn = ttk.Button(window, text="+", command=addEntry)
     btn.grid(column=1, pady=10)
 
-    lbl = Label(window, text="Website")
-    lbl.grid(row=3, column=0, padx=80)
-    lbl = Label(window, text="Username")
-    lbl.grid(row=3, column=1, padx=80)
-    lbl = Label(window, text="Password")
-    lbl.grid(row=3, column=2, padx=80)
+    lbl = ttk.Label(window, text="Sivusto", font=("Helvetica", 16))
+    lbl.grid(row=3, column=0, padx=100)
+    lbl = ttk.Label(window, text="Käyttäjätunnus", font=("Helvetica", 16))
+    lbl.grid(row=3, column=1, padx=100)
+    lbl = ttk.Label(window, text="Salasana", font=("Helvetica", 16))
+    lbl.grid(row=3, column=2, padx=100)
+
 
     cursor.execute("SELECT * FROM vault")
-    if(cursor.fetchall() != None):
-        i = 0
-        while True:
-            cursor.execute("SELECT * FROM vault")
-            array = cursor.fetchall()
+    vault_entries = cursor.fetchall()
+    if vault_entries:
+        for i in range(len(vault_entries)):
 
-            lbl1 = Label(window, text=(array[i][1]), font=("Helvetica", 12))
+            lbl1 = ttk.Label(window, text=(vault_entries[i][1]), font=("Helvetica", 16))
             lbl1.grid(column=0, row=i+4)
-            lbl1 = Label(window, text=(array[i][2]), font=("Helvetica", 12))
+            lbl1 = ttk.Label(window, text=(vault_entries[i][2]), font=("Helvetica", 16))
             lbl1.grid(column=1, row=i+4)
-            lbl1 = Label(window, text=(array[i][3]), font=("Helvetica", 12))
-            lbl1.grid(column=2, row=i+4)
+            btn_copy_username = ttk.Button(window, text="Kopioi käyttäjätunnus", command=lambda text=vault_entries[i][2]: copyToClipboard(text))
+            btn_copy_username.grid(column=5, row=i+4)
 
-            btn = Button(window, text="Delete",
-                         command=partial(removeEntry, array[i][0]))
-            btn.grid(column=3, row=i+4, pady=10)
+            lbl_password = ttk.Label(window, text="*" * len(vault_entries[i][3]), font=("Helvetica", 16))
+            lbl_password.grid(column=2, row=i+4)
+            btn_copy_password = ttk.Button(window, text="Kopioi salasana", command=lambda text=vault_entries[i][3]: copyToClipboard(text))
+            btn_copy_password.grid(column=6, row=i+4)    
 
-            i = i+1
+            def showPassword(i, lbl=lbl_password):
+                lbl.config(text=(vault_entries[i][3]))
 
-            cursor.execute("SELECT * FROM vault")
-            if(len(cursor.fetchall()) <= i):
-                break
+                def hidePassword():
+                    lbl.config(text="*" * len(vault_entries[i][3]))
+
+                window.after(10000, hidePassword)
+
+            btn_show = ttk.Button(window, text="Näytä", command=lambda i=i, lbl=lbl_password: showPassword(i, lbl))
+            btn_show.grid(column=3, row=i+4, pady=10)
+            btn_delete = ttk.Button(window, text="Poista", command=partial(removeEntry, vault_entries[i][0]))
+            btn_delete.grid(column=4, row=i+4, pady=10)
 
 
 cursor.execute("SELECT * FROM masterpassword")
